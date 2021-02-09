@@ -1,13 +1,15 @@
-# Proposal
-Here is where I describe what I'm goint to build.
+# Proposal 
+an 2D advanture game. the main character have to move around the map, killing enermy in sight,
+solving puzzles, and get back to the original world.
 
 ## Needs To Have
-- first thing
-- second thing
-- thrid thing
+- map structure thatallows the player to move from place to place
+- player must be able to attack, jump, and interact with its surrondings
+- enemy and puzzle mechnism: hit box, interactives
+- sound
 
 ## Nice To Have
-- more stuff
-- other things
-- etc
-
+- enemy ai
+- animation for attacking and dying
+- ending scene
+- more map, enemy types, abilities, weapons, boss fight.etc
