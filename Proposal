@@ -1,9 +1,9 @@
 # Proposal 
-an 2D advanture game. the main character have to move around the map, killing enermy in sight,
-solving puzzles, and get back to the original world.
+an 2D advanture game. the main character have to move around the map, killing enermy in sight, and
+solving puzzles.
 
 ## Needs To Have
-- map structure thatallows the player to move from place to place
+- map structure that allows the player to move around the map
 - player must be able to attack, jump, and interact with its surrondings
 - enemy and puzzle mechnism: hit box, interactives
 - sound
