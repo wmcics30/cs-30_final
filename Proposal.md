@@ -1,7 +1,12 @@
 # Proposal 
 a program that solves the maze. it should involve backtracking,
 searching, and other basic algorithem factors. the machine is 
-placed at the entrance of the maze and work its way to the exit
+placed at the entrance of the maze and work its way to the exit.
+
+the program seems hard and requires huge amount of learning on the 
+algorithem. I will be spanding most of my time learning and 
+pracicing the concept during the first half, and work on the actual
+program afterward.
 
 ## Needs To Have
 - a structre of puzzle, limiting machine's movement. basically
