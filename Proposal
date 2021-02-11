@@ -1,15 +1,21 @@
 # Proposal 
-an 2D advanture game. the main character have to move around the map, killing enermy in sight, and
-solving puzzles.
+a program that solves the maze. it should involve backtracking,
+searching, and other basic algorithem factors. the machine is 
+placed at the entrance of the maze and work its way to the exit
 
 ## Needs To Have
-- map structure that allows the player to move around the map
-- player must be able to attack, jump, and interact with its surrondings
-- enemy and puzzle mechnism: hit box, interactives
-- sound
+- a structre of puzzle, limiting machine's movement. basically
+    the wall that tells the player its option of movement
+- a prexisting, hardcoded puzzle for the machine to solve
+- a way to begain and end the game
 
 ## Nice To Have
-- enemy ai
-- animation for attacking and dying
-- ending scene
-- more map, enemy types, abilities, weapons, boss fight.etc
+- the program is able to generate the puzzle itself
+- an interaction system that allows the human to play it
+- maybe generate different difficulty of maze for both the machine 
+    and the player to play it
+- a different mode, where the machine is placed in the middle 
+    of a maze and tring to find the only exit of the maze.
+- sound effect
+- better UI
+- fining the shorteset route
