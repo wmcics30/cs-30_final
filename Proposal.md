@@ -11,7 +11,7 @@ program afterward.
 ## Needs To Have
 - a structre of puzzle, limiting machine's movement. basically
     the wall that tells the player its option of movement
-- a prexisting, hardcoded puzzle for the machine to solve
+~~a prexisting, hardcoded puzzle for the machine to solve~~
 - a way to begain and end the game
 
 ## Nice To Have
