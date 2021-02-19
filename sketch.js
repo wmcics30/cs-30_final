@@ -26,6 +26,8 @@ let bestRouteCoor = []
 let start_point = [1,1]
 let end_point = [5,2]
 
+let endrectursion = false
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   cellLength = 30
@@ -109,26 +111,44 @@ function bestRoute(start,end){
 
   k = grid[ye][xe];
 
-  countBack(k,xe,ye)
+  // countBack(k,xe,ye)
+  while (k != 1){
+    countBack(k)
+    k -= 1
+  }
 
 }
 
-function countBack(num,x,y){
-  
-  if (num != 1){
-    if (grid[y][x-1] == num-1){
-      countBack(num-1,y,x-1)
-    }
-    if (grid[y][x+1] == num-1){
-      countBack(num+1,y,x+1)
-    }
-    if (grid[y+1][x] == num-1){
-      countBack(num-1,y+1,x)
-    }
-    if (grid[y-1][x] == num-1){
-      countBack(num-1,y-1,x)
-    }
-  }
+function countBack(num){//,x,y){
 
- 
+  if (num != 1 && grid[ye][xe-1] == num-1){}
+  
+  // if (num != 1){
+  //   // run test to detect what the next grid is
+  //   if (grid[y][x-1] == num-1 && endrectursion == false){
+  //     countBack(num-1,y,x-1)
+  //     bestRouteCoor.push([y,x])
+  //   }
+  //   else if (grid[y][x+1] == num-1 && endrectursion == false){
+  //     countBack(num-1,y,x+1)
+  //     bestRouteCoor.push([y,x])
+  //   }
+  //   else if (grid[y+1][x] == num-1 && endrectursion == false){
+  //     countBack(num-1,y+1,x)
+  //     bestRouteCoor.push([y,x])
+  //   }
+  //   else if (grid[y-1][x] == num-1 && endrectursion == false){
+  //     countBack(num-1,y-1,x)
+  //     bestRouteCoor.push([y,x])
+  //   }
+  //   return
+  // }
+  
+  // else{
+  //   console.log(1)
+  //   bestRouteCoor.push([y,x])
+  //   endrectursion = true
+  //   return
+  // }
+
 }
