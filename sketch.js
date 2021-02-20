@@ -22,21 +22,27 @@ let grid = [
 ]
 
 let bestRouteCoor = []
+let showRoute = false;
 
 let start_point = [1,1]
 let end_point = [5,2]
 
-let endrectursion = false
+let playerX,playerY;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   cellLength = 30
+  playerX = start_point[0];
+  playerY = start_point[1];
 }
 
 function draw() {
   background('violet');
   drawMaze(cellLength);
+  showBestRoute();
+  showPlayer(playerX,playerY);
 }
+
 
 function drawMaze(side){
   for (let y=0;y<grid.length;y++){
@@ -54,15 +60,73 @@ function drawMaze(side){
         fill(0,0,0)
         text(grid[y][x],x*side + side*2/5, y*side + side*2/3)
       }
+
+      fill('lime')
+      circle(end_point[0]*side+side/2,end_point[1]*side+side/2,side/2)
     }
   }
 }
 
+function showBestRoute(){
+  
+  if (showRoute){
+    // highlight from first element in the bestroute list
+
+    for (let i =0;i<bestRouteCoor.length;i++){
+      fill("lime");
+      square(bestRouteCoor[i][1]*cellLength,bestRouteCoor[i][0]*cellLength,cellLength);
+    }
+    
+  }
+}
+
+function showPlayer(x,y){
+  fill("purple");
+  triangle((x+0.25)*cellLength,(y+0.25)*cellLength,(x+0.75)*cellLength,(y+0.25)*cellLength,(x+0.5)*cellLength,(y+.75)*cellLength);
+}
+
 function keyPressed(){
-  if (key == "s"){
+  
+  console.log(key)
+
+  if (key == "1"){
     solveMaze(start_point,end_point,grid)
     bestRoute(start_point,end_point)
   }
+  if (key == "2"){
+    solveMaze(start_point,end_point,grid)
+    bestRoute(start_point,end_point)
+    showRoute = true
+  }
+
+  if (key = "w"){
+    console.log(grid[playerY-1][playerX] != -1)
+    if (grid[playerY-1][playerX] != -1){
+      playerY -= 1;
+    }
+  }
+
+  else if (key = "s"){
+    console.log(grid[playerY+1][playerX] != -1)
+    if (grid[playerY+1][playerX] != -1){
+      playerY += 1;
+    }
+  }
+
+  else if (key = "a"){
+    console.log(grid[playerY][playerX-1] != -1)
+    if (grid[playerY][playerX-1] != -1){
+      playerY -= 1;
+    }
+  }
+
+  else if (key = "d"){
+    console.log(grid[playerY][playerX+1] != -1)
+    if (grid[playerY][playerX+1] != -1){
+      playerY += 1;
+    }
+  }
+
 }
 
 function solveMaze(start,finish,grid){
@@ -104,6 +168,11 @@ function bestRoute(start,end){
   // the idea here is to count backwards: starting at the end
   // and count the grid that has one less, and eventually get back
   // to starting point
+
+  // a minor here, if pressed s twice, it keeps on adding
+  // more to the list,  the issuecan be improved using set 
+  // insted of list
+
   ye = end[1]
   xe = end[0]
   yi = start[1]
@@ -111,44 +180,30 @@ function bestRoute(start,end){
 
   k = grid[ye][xe];
 
-  // countBack(k,xe,ye)
+  bestRouteCoor.push([ye,xe]);
+
   while (k != 1){
-    countBack(k)
+    countBack(k,bestRouteCoor[bestRouteCoor.length-1][1],bestRouteCoor[bestRouteCoor.length-1][0])
     k -= 1
-  }
+ }
 
 }
 
-function countBack(num){//,x,y){
+function countBack(num,x,y){
 
-  if (num != 1 && grid[ye][xe-1] == num-1){}
-  
-  // if (num != 1){
-  //   // run test to detect what the next grid is
-  //   if (grid[y][x-1] == num-1 && endrectursion == false){
-  //     countBack(num-1,y,x-1)
-  //     bestRouteCoor.push([y,x])
-  //   }
-  //   else if (grid[y][x+1] == num-1 && endrectursion == false){
-  //     countBack(num-1,y,x+1)
-  //     bestRouteCoor.push([y,x])
-  //   }
-  //   else if (grid[y+1][x] == num-1 && endrectursion == false){
-  //     countBack(num-1,y+1,x)
-  //     bestRouteCoor.push([y,x])
-  //   }
-  //   else if (grid[y-1][x] == num-1 && endrectursion == false){
-  //     countBack(num-1,y-1,x)
-  //     bestRouteCoor.push([y,x])
-  //   }
-  //   return
-  // }
-  
-  // else{
-  //   console.log(1)
-  //   bestRouteCoor.push([y,x])
-  //   endrectursion = true
-  //   return
-  // }
+  if (grid[y][x-1] == num-1){
+    bestRouteCoor.push([y,x-1])
+  }
+  else   if (grid[y][x+1] == num-1){
+    bestRouteCoor.push([y,x+1])
+  }
 
+  else   if (grid[y-1][x] == num-1){
+    bestRouteCoor.push([y-1,x])
+  }
+
+  else   if (grid[y+1][x] == num-1){
+    bestRouteCoor.push([y+1,x])
+  }
+  
 }
