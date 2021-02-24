@@ -12,39 +12,63 @@
 // create a class for grids, each class is a grid itself
 // each class has a starting point, end point, bestRouteCoor, playerX, playerY
 
+//https://www.baeldung.com/cs/maze-generation
+//https://www.baeldung.com/cs/dijkstra
 
 
 let mazeWidth,mazeHeight = 9,cellLength = 20;
 let gameStart = false;
 
 let grid = [
-  [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-  [-1,  0, -1,  0, -1,  0,  0,  0,  0, -1],
-  [-1,  0, -1,  0, -1,  0,  0,  0,  0, -1],
-  [-1,  0, -1,  0, -1, -1, -1, -1,  0, -1],
-  [-1,  0, -1,  0,  0,  0,  0, -1,  0, -1],
-  [-1,  0, -1,  0,  0,  0,  0, -1,  0, -1],
-  [-1,  0,  0,  0,  0,  0,  0, -1,  0, -1],
-  [-1,  0, -1,  0,  0,  0,  0,  0,  0, -1],
-  [-1,  0, -1,  0,  0,  0,  0,  0,  0, -1],
-  [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+  ["+", "+", "+", "+", "+", "+", "+", "+", "+", "+"],
+  ["+",   1, "+",   0, "+",   0,   0,   0,   0, "+"],
+  ["+",   2, "+",   0, "+",   0,   0,   0,   0, "+"],
+  ["+",   3, "+",   0, "+", "+", "+", "+",   0, "+"],
+  ["+",   0, "+",   0,   0,   0,   0, "+",   0, "+"],
+  ["+",   0, "+",   0,   0,   0,   0, "+",   0, "+"],
+  ["+",   0,   0,   0,   0,   0,   0, "+",   0, "+"],
+  ["+",   0, "+",   0,   0,   0,   0,   0,   0, "+"],
+  ["+",   0, "+",   0,   0,   0,   0,   0,   0, "+"],
+  ["+", "+", "+", "+", "+", "+", "+", "+", "+", "+"],
+];
+
+let grid2 = [
+  ["+", "+", "+", "+", "+", "+", "+", "+", "+", "+","+","+","+","+","+","+","+"],
+  ["+",   0, "+",   0, "+", "+",   0,   0,   0,   0,  0,"+","+",  0,  0,  0,"+"],
+  ["+",   0, "+",   0, "+",    0,  0, "+",  "+",  0,  0,  0,"+",  0,"+",  0,"+"],
+  ["+",   0, "+",   0, "+",   0, "+", "+",   0,   0,"+",  0,"+",  0,"+",  0,"+"],
+  ["+",   0, "+",   0,   0,   0,   0, "+",   0, "+","+",  0,"+",  0,"+",  0,"+"],
+  ["+",   0, "+",   0, "+",   0,   0, "+",   0,   0,"+",  0,  0,  0,  0,  0,"+"],
+  ["+",   0,   0,   0, "+", "+", "+", "+", "+",   0,"+",  0,  0,"+","+","+","+"],
+  ["+", "+", "+",   0,   0,   0,   0, "+", "+", "+","+",  0,"+","+","+",  0,"+"],
+  ["+",   0, "+",   0, "+", "+",   0,  "+",  0,   0,"+",  0,  0,  0,  0,  0,"+"],
+  ["+",   0,   0,   0, "+",   0,   0, "+",   0, "+","+",  0,"+","+","+",  0,"+"],
+  ["+",   0, "+",   0, "+", "+", "+", "+",   0,   0,  0,  0,"+",  0,"+",  0,"+"],
+  ["+",   0, "+",   0,   0,   0,   0,   0,   0, "+","+","+","+",  0,"+",  0,"+"],
+  ["+",   0, "+", "+", "+", "+", "+", "+",   0, "+",  0,  0,  0,  0,"+",  0,"+"],
+  ["+",   0,   0,   0,   0,   0, "+",   0,   0, "+",  0,"+","+",  0,  0,  0,"+"],
+  ["+", "+", "+", "+", "+", "+", "+", "+", "+", "+","+","+","+","+","+","+","+"],
 ];
 
 let bestRouteCoor = [];
 let showRoute = false;
 
+// make a class that relates endpoint to the maze
 let start_point = [1,1];
-let end_point = [5,2];
+let end_point = [15 ,13];
 
 let playerX,playerY;
 
 let gameFinished = false;
+let randomMazeMode = false;
+let randomMaze ;
 
-let groundTile, wallTile;
+let groundTile, wallTile, startScreen;
 
 function preload(){
   groundTile = loadImage("assets/ground.png");
   wallTile = loadImage("assets/wall.png");
+  startScreen = loadImage("assets/startScreen.jpg");
 }
 
 function setup() {
@@ -55,38 +79,48 @@ function setup() {
 }
 
 function draw() {
-  background("violet");
-  StartScreen();
-  startgame();
-}
-
-class MazeMap {
-  constructor() {
-    this.start = [1,1];
-    this.end;
-    this.difficulty;
-    this.bestRouteCoor;
-  }
-}
-
-function StartScreen(){
-  if (gameStart === false){
+  background(startScreen);
+  if (!gameStart){
     text("MAZE",width/2,height/2);
   }
-}
-
-function startgame(){
-  if (gameStart){
-    drawMaze(cellLength);
-    showBestRoute();
-    showPlayer(playerX,playerY);
+  else if (randomMazeMode){
+    // set randomMaze width height as fixed for now
+    // set the endpoint at a fixed point somewhere in the maze
+    randomMaze = generateMazeGrid(5,6,[5,6],[1,1]);
+    drawMaze(cellLength,[5,6],randomMaze);
+  }
+  else{
+    startGameWithDiffMap(cellLength,end_point,playerX,playerY,grid2);
   }
 }
 
-function drawMaze(side){
-  for (let y=0;y<grid.length;y++){
-    for (let x=0; x<grid[0].length;x++){
-      if (grid[y][x] === -1){
+function generateMazeGrid(width,height,endpoint,startpoint){
+  let mazeBackground = [];
+  for (let y=0; y<height+2 ;y++){
+    mazeBackground.push([]);
+    for (let x=0; x<width+2;x++){
+      if (y === 0 || y === height+1 || x === 0 || x === width+1){
+        mazeBackground[y][x] = "+";
+      }
+      else{
+        mazeBackground[y][x] = 0;
+      }
+    }
+  }
+  return mazeBackground;
+}
+
+function startGameWithDiffMap(side,end,x,y,maze){
+  drawMaze(side,end,maze);
+  showBestRoute();
+  showPlayer(x,y);
+
+}
+
+function drawMaze(side,endCoor,maze){
+  for (let y=0;y<maze.length;y++){
+    for (let x=0; x<maze[0].length;x++){
+      if (maze[y][x] === "+"){
         //fill("brown");
         image(wallTile,x*cellLength,y*cellLength,cellLength,cellLength);
       }
@@ -96,14 +130,15 @@ function drawMaze(side){
       }
       //square(x*side,y*side,side);
 
-      if (grid[y][x] !== -1 && grid[y][x] !== 0){
-        // here you draw a green circle within the grid, denoting it is calculated
+      // code below shows things calculated number
+      if (maze[y][x] !== -1 && maze[y][x] !== 0 && showRoute === true){
+        // here you draw a green circle within the maze, denoting it is calculated
         fill(0,0,0);
-        text(grid[y][x],x*side + side*2/5, y*side + side*2/3);
+        text(maze[y][x],x*side + side*2/5, y*side + side*2/3);
       }
 
       fill("lime");
-      circle(end_point[0]*side+side/2,end_point[1]*side+side/2,side/2);
+      circle(endCoor[0]*side+side/2,endCoor[1]*side+side/2,side/2);
     }
   }
 }
@@ -135,91 +170,82 @@ function showBestRoute(){
 }
 
 function keyPressed(){
-  
-  console.log(key);
 
-  if (key === "1"){
-    solveMaze(end_point,grid);
-    bestRoute(end_point);
-  }
-  if (key === "2"){
-    solveMaze(end_point,grid);
-    bestRoute(end_point);
+  if (key === "1"&& gameStart){
+    solveMaze(end_point,grid2);
+    bestRoute(end_point,grid2);
     showRoute = true;
   }
 
   if (key === " "){
     gameStart = true;
-  }
-
-  if (key === "r"){
     playerX = start_point[0];
     playerY = start_point[1];
     gameFinished = false;
-    gameStart = false;
+    showRoute = false;
   }
 
   if (key === "w"){
-    console.log(grid[playerY-1][playerX] !== -1);
-    if (grid[playerY-1][playerX] !== -1){
+    console.log(grid2[playerY-1][playerX] !== "+");
+    if (grid2[playerY-1][playerX] !== "+"){
       playerY -= 1;
     }
   }
 
   else if (key === "s"){
-    console.log(grid[playerY+1][playerX] !== -1);
-    if (grid[playerY+1][playerX] !== -1){
+    console.log(grid2[playerY+1][playerX] !== "+");
+    if (grid2[playerY+1][playerX] !== "+"){
       playerY += 1;
     }
   }
 
   else if (key === "a"){
-    console.log(grid[playerY][playerX-1] !== -1);
-    if (grid[playerY][playerX-1] !== -1){
+    console.log(grid2[playerY][playerX-1] !== "+");
+    if (grid2[playerY][playerX-1] !== "+"){
       playerX -= 1;
     }
   }
 
   else if (key === "d"){
-    console.log(grid[playerY][playerX+1] !== -1);
-    if (grid[playerY][playerX+1] !== -1){
+    console.log(grid2[playerY][playerX+1] !== "+");
+    if (grid2[playerY][playerX+1] !== "+"){
       playerX += 1;
     }
   }
 }
 
-function solveMaze(finish,grid){
+function solveMaze(finish,maze){
   // yi and xi are initial y and x value, ye and xe are ending x,y value
 
   let ye = finish[1];
   let xe = finish[0] ;
   let k = 1;
 
-  grid[1][1] = 1;
+  maze[1][1] = 1;
 
-  while (grid[ye][xe] === 0){
-    spread(k);
+  while (maze[ye][xe] === 0){
+    spread(k,maze);
     k += 1;
   }
 }
 
-function spread(num){
+function spread(num,maze){
 
   // checking for the number, if white around it, assign it to be next number  
-  for (let y = 0; y < grid.length;y++){
-    for (let x =0; x < grid[0].length;x++){
-      if (grid[y][x] === num){
-        if (x < grid[0].length -1 && grid[y][x+1] === 0){
-          grid[y][x+1] = num + 1;
+  for (let y = 0; y < maze.length;y++){
+    for (let x =0; x < maze[0].length;x++){
+      if (maze[y][x] === num){
+        if (x < maze[0].length -1 && maze[y][x+1] === 0){
+          maze[y][x+1] = num + 1;
         }
-        if (y < grid.length - 1 && grid[y+1][x] === 0){
-          grid[y+1][x] = num + 1;
+        if (y < maze.length - 1 && maze[y+1][x] === 0){
+          maze[y+1][x] = num + 1;
         }
-        if (x > 0 && grid[y][x-1] === 0){
-          grid[y][x-1] = num + 1;
+        if (x > 0 && maze[y][x-1] === 0){
+          maze[y][x-1] = num + 1;
         }
-        if (y > 0 && grid[y-1][x] === 0){
-          grid[y-1][x] = num + 1;
+        if (y > 0 && maze[y-1][x] === 0){
+          maze[y-1][x] = num + 1;
         }
       }
     }
@@ -227,7 +253,7 @@ function spread(num){
     
 }
 
-function bestRoute(end){
+function bestRoute(end,maze){
   // find the best route: in this case, there are plenty of best
   // routes, it doesn't matter which one
   // the idea here is to count backwards: starting at the end
@@ -242,31 +268,31 @@ function bestRoute(end){
   let xe = end[0];
 
 
-  let k = grid[ye][xe];
+  let k = maze[ye][xe];
 
   bestRouteCoor.push([ye,xe]);
 
   while (k !== 1){
-    countBack(k,bestRouteCoor[bestRouteCoor.length-1][1],bestRouteCoor[bestRouteCoor.length-1][0]);
+    countBack(k,bestRouteCoor[bestRouteCoor.length-1][1],bestRouteCoor[bestRouteCoor.length-1][0],maze);
     k -= 1;
   }
 
 }
 
-function countBack(num,x,y){
+function countBack(num,x,y,maze){
 
-  if (grid[y][x-1] === num-1){
+  if (maze[y][x-1] === num-1){
     bestRouteCoor.push([y,x-1]);
   }
-  else   if (grid[y][x+1] === num-1){
+  else   if (maze[y][x+1] === num-1){
     bestRouteCoor.push([y,x+1]);
   }
 
-  else   if (grid[y-1][x] === num-1){
+  else   if (maze[y-1][x] === num-1){
     bestRouteCoor.push([y-1,x]);
   }
 
-  else   if (grid[y+1][x] === num-1){
+  else   if (maze[y+1][x] === num-1){
     bestRouteCoor.push([y+1,x]);
   }
   
