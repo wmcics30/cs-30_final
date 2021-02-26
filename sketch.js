@@ -16,14 +16,20 @@
 //https://www.baeldung.com/cs/dijkstra
 
 
-let mazeWidth,mazeHeight = 9,cellLength = 20;
+let mazeWidth,mazeHeight;
+let cellLength = 20;
 let gameStart = false;
+let customMode = false;
+let getWidth = false;
+let getHeight = false;
+let cusWid,cusHei;
+
 
 let grid = [
   ["+", "+", "+", "+", "+", "+", "+", "+", "+", "+"],
-  ["+",   1, "+",   0, "+",   0,   0,   0,   0, "+"],
-  ["+",   2, "+",   0, "+",   0,   0,   0,   0, "+"],
-  ["+",   3, "+",   0, "+", "+", "+", "+",   0, "+"],
+  ["+",   0, "+",   0, "+",   0,   0,   0,   0, "+"],
+  ["+",   0, "+",   0, "+",   0,   0,   0,   0, "+"],
+  ["+",   0, "+",   0, "+", "+", "+", "+",   0, "+"],
   ["+",   0, "+",   0,   0,   0,   0, "+",   0, "+"],
   ["+",   0, "+",   0,   0,   0,   0, "+",   0, "+"],
   ["+",   0,   0,   0,   0,   0,   0, "+",   0, "+"],
@@ -43,11 +49,34 @@ let grid2 = [
   ["+", "+", "+",   0,   0,   0,   0, "+", "+", "+","+",  0,"+","+","+",  0,"+"],
   ["+",   0, "+",   0, "+", "+",   0,  "+",  0,   0,"+",  0,  0,  0,  0,  0,"+"],
   ["+",   0,   0,   0, "+",   0,   0, "+",   0, "+","+",  0,"+","+","+",  0,"+"],
-  ["+",   0, "+",   0, "+", "+", "+", "+",   0,   0,  0,  0,"+",  0,"+",  0,"+"],
-  ["+",   0, "+",   0,   0,   0,   0,   0,   0, "+","+","+","+",  0,"+",  0,"+"],
-  ["+",   0, "+", "+", "+", "+", "+", "+",   0, "+",  0,  0,  0,  0,"+",  0,"+"],
+  ["+",   0, "+",   0, "+", "+",   0, "+",   0,   0,  0,  0,"+",  0,"+",  0,"+"],
+  ["+",   0, "+",   0,   0,   0,   0, "+",   0, "+","+","+","+",  0,"+",  0,"+"],
+  ["+",   0, "+", "+", "+", "+", "+", "+",   0,   0,  0,  0,  0,  0,"+",  0,"+"],
   ["+",   0,   0,   0,   0,   0, "+",   0,   0, "+",  0,"+","+",  0,  0,  0,"+"],
   ["+", "+", "+", "+", "+", "+", "+", "+", "+", "+","+","+","+","+","+","+","+"],
+];
+
+let grid3 = [
+  ["+", "+", "+", "+", "+", "+", "+", "+", "+", "+","+","+","+","+","+","+","+","+","+","+","+","+","+"],
+  ["+",   0, "+",   0, "+", "+",   0,   0,   0,   0,  0,"+","+",  0,  0,  0,"+","+","+",  0,  0,  0,"+"],
+  ["+",   0, "+",   0, "+",    0,  0, "+",  "+",  0,  0,  0,"+",  0,"+",  0,  0,  0,"+",  0,"+",  0,"+"],
+  ["+",   0, "+",   0, "+",   0, "+", "+",   0,   0,"+",  0,"+",  0,"+",  0,"+",  0,"+",  0,"+",  0,"+"],
+  ["+",   0, "+",   0,   0,   0,   0, "+",   0, "+","+",  0,"+",  0,"+",  0,"+",  0,  0,  0,"+",  0,"+"],
+  ["+",   0, "+",   0, "+",   0,   0, "+",   0,   0,"+",  0,  0,  0,  0,  0,"+","+","+",  0,"+",  0,"+"],
+  ["+",   0,   0,   0, "+", "+", "+", "+", "+",   0,"+",  0,  0,"+","+","+","+",  0,  0,  0,"+",  0,"+"],
+  ["+", "+", "+",   0,   0,   0,   0, "+", "+", "+","+",  0,"+","+","+",  0,  0,  0,"+",  0,"+",  0,"+"],
+  ["+",   0, "+",   0, "+", "+",   0,  "+",  0,   0,"+",  0,  0,  0,  0,  0,"+","+","+","+","+",  0,"+"],
+  ["+",   0,   0,   0, "+",   0,   0,   0,   0, "+","+",  0,"+","+","+",  0,"+",  0,  0,  0,  0,  0,"+"],
+  ["+",   0, "+",   0, "+", "+", "+", "+",   0,   0,  0,  0,  0,  0,"+","+","+",  0,"+",  0,"+","+","+"],
+  ["+",   0, "+",   0,   0,   0,   0, "+", "+", "+","+","+","+",  0,"+",  0,  0,  0,"+",  0,"+",  0,"+"],
+  ["+",   0, "+", "+", "+", "+", "+", "+", "+", "+",  0,  0,  0,  0,"+","+","+","+","+",  0,  0,  0,"+"],
+  ["+",   0,   0,   0,   0,   0, "+",   0,   0, "+","+","+",  0,"+","+",  0,  0,  0,  0,"+","+",  0,"+"],
+  ["+", "+", "+",  0,  "+",   0, "+", "+",   0, "+",  0,  0,  0, "+", 0,  0,  0,"+","+",  0,  0,  0,"+"],
+  ["+",   0,   0,   0, "+",   0, "+",   0,   0, "+",  0, "+", 0,"+","+","+",  0,  0,"+",  0,"+","+","+"],
+  ["+", "+", "+",   0, "+",   0,   0,   0,   0, "+",  0,  0,  0,  0,  0,"+",  0,"+","+",  0,  0,  0,"+"],
+  ["+",   0,   0,   0, "+", "+", "+", "+",   0, "+","+","+","+",  0,  0,   0, 0,"+",  0,"+","+",  0,"+"],
+  ["+",   0, "+",   0,  0 ,   0,   0,   0,   0, "+",  0,  0,  0,  0,"+",   0, 0,  0,  0,  0,"+",  0,"+"],
+  ["+", "+", "+", "+", "+", "+", "+", "+", "+", "+","+","+","+","+","+","+","+","+","+","+","+","+","+"],
 ];
 
 let bestRouteCoor = [];
@@ -55,14 +84,13 @@ let showRoute = false;
 
 // make a class that relates endpoint to the maze
 let start_point = [1,1];
-let end_point = [7 ,9];
+let end_point;
 
 let playerX,playerY;
 
 let gameFinished = false;
-let randomMazeMode = true;
-let randomMaze ;
-let currentGrid;
+let currentGrid = grid;
+let gridNumber = 3;
 
 let groundTile, wallTile, startScreen;
 
@@ -84,46 +112,50 @@ function draw() {
   if (!gameStart){
     text("MAZE",width/2,height/2);
   }
-  else if (randomMazeMode){
-    // set randomMaze width height as fixed for now
-    // set the endpoint at a fixed point somewhere in the maze
-    drawMaze(cellLength,[7,9],randomMaze);
-    startGameWithDiffMap(cellLength,[7,9],playerX,playerY,randomMaze);
+  else if (customMode){
+    if (getWidth){
+      fill(255);
+      rect(0,0,width,height);
+      fill(0);
+      text("INPUT DESIRED GRID WIDTH",width/2,height/2);
+    }
+    else if (getHeight){
+      background(255);
+      text("INPUT DESIRED GRID HEIGHT",width/2,height/2);
+    }
+    else{
+      let customGrid = [];
+      createCusCanvas(cusWid,cusHei, customGrid);
+      console.log(customGrid);
+    }
+    // draw grid
+    // startGamewithDiffMap
   }
   else{
-    currentGrid = grid
-    startGameWithDiffMap(cellLength,end_point,playerX,playerY,grid2);
-  }
-}
-
-function generateMazeGrid(width,height){
-  let mazeBackground = [];
-  // create the base grid 
-  for (let y=0; y<height+2 ;y++){
-    mazeBackground.push([]);
-    for (let x=0; x<width+2;x++){
-        // create the base grid 
-      if (y === 0 || y === height+1 || x === 0 || x === width+1 || y%2 === 0 && x%2 === 0){
-        mazeBackground[y][x] = "+";
-      }
-      else{
-        mazeBackground[y][x] = 0;
-      }
-      // assign random number to find shortest path to the end point
+    if (gridNumber === 1){
+      currentGrid = grid;
+      end_point = [5 ,2];
     }
+    else if (gridNumber === 2){
+      currentGrid = grid2;
+      end_point = [15,13];
+    }
+    else if (gridNumber === 3){
+      currentGrid = grid3;
+      end_point = [21,18];
+    }
+ 
+    startGameWithDiffMap(cellLength,end_point,playerX,playerY,currentGrid);
   }
-
-  return mazeBackground;
 }
 
-function algorithemForRandomMaze(width,height,grid){
-  for (let y=0; y<height+2 ;y++){
-    for (let x=0; x<width+2;x++){
-        // create the base grid 
-      if (grid[y][x] !== "+" && grid[y][x] === 0){
-        grid[y][x] = Math.floor(random(1, 100));
-      }
-     } 
+function createCusCanvas(width,height,grid){
+  for (let y=0;y<height+2;y++){
+    grid.push([]);
+  
+    for (let x=0;x<width+2;x++){
+      grid[y].push([]);
+    }
   }
 }
 
@@ -167,8 +199,16 @@ function showPlayer(x,y){
     rect(x*cellLength,y*cellLength,cellLength);
   }
   if (playerX === end_point[0] && playerY === end_point[1]){
-    gameStart = false;
-    gameFinished = true;
+    if (gridNumber < 4){
+      gridNumber ++;
+      playerX = 1;
+      playerY = 1;
+      bestRouteCoor = [];
+    }
+    if (gridNumber === 4){
+      gameStart = false;
+      gameFinished = true;
+    }
   }
 }
 
@@ -194,41 +234,54 @@ function keyPressed(){
   }
 
   if (key === " "){
+    // start the game
+    gridNumber = 1;
     gameStart = true;
-    randomMaze = generateMazeGrid(7,9);
-    currentGrid = randomMaze
-    algorithemForRandomMaze(7,9,currentGrid);
-    findShortestPath
     playerX = start_point[0];
     playerY = start_point[1];
     gameFinished = false;
     showRoute = false;
-
   }
 
+  if (getHeight){
+    cusHei = Number(key);
+    getHeight = false;
+  }
+
+  if (getWidth){
+    cusWid = Number(key);
+    getWidth = false;
+    getHeight = true;
+  }
+
+  // custom mode
+  if (key === "c"){
+    customMode = true;
+    getWidth = true;
+    gameStart = true;
+    // get an input of Y
+  }
+
+  // moves the character 
   if (key === "w"){
-    console.log(currentGrid[playerY-1][playerX] !== "+");
     if (currentGrid[playerY-1][playerX] !== "+"){
       playerY -= 1;
     }
   }
 
   else if (key === "s"){
-    console.log(currentGrid[playerY+1][playerX] !== "+");
     if (currentGrid[playerY+1][playerX] !== "+"){
       playerY += 1;
     }
   }
 
   else if (key === "a"){
-    console.log(currentGrid[playerY][playerX-1] !== "+");
     if (currentGrid[playerY][playerX-1] !== "+"){
       playerX -= 1;
     }
   }
 
   else if (key === "d"){
-    console.log(currentGrid[playerY][playerX+1] !== "+");
     if (currentGrid[playerY][playerX+1] !== "+"){
       playerX += 1;
     }
