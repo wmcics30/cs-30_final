@@ -55,13 +55,14 @@ let showRoute = false;
 
 // make a class that relates endpoint to the maze
 let start_point = [1,1];
-let end_point = [15 ,13];
+let end_point = [7 ,9];
 
 let playerX,playerY;
 
 let gameFinished = false;
-let randomMazeMode = false;
+let randomMazeMode = true;
 let randomMaze ;
+let currentGrid;
 
 let groundTile, wallTile, startScreen;
 
@@ -86,35 +87,50 @@ function draw() {
   else if (randomMazeMode){
     // set randomMaze width height as fixed for now
     // set the endpoint at a fixed point somewhere in the maze
-    randomMaze = generateMazeGrid(5,6,[5,6],[1,1]);
-    drawMaze(cellLength,[5,6],randomMaze);
+    drawMaze(cellLength,[7,9],randomMaze);
+    startGameWithDiffMap(cellLength,[7,9],playerX,playerY,randomMaze);
   }
   else{
+    currentGrid = grid
     startGameWithDiffMap(cellLength,end_point,playerX,playerY,grid2);
   }
 }
 
-function generateMazeGrid(width,height,endpoint,startpoint){
+function generateMazeGrid(width,height){
   let mazeBackground = [];
+  // create the base grid 
   for (let y=0; y<height+2 ;y++){
     mazeBackground.push([]);
     for (let x=0; x<width+2;x++){
-      if (y === 0 || y === height+1 || x === 0 || x === width+1){
+        // create the base grid 
+      if (y === 0 || y === height+1 || x === 0 || x === width+1 || y%2 === 0 && x%2 === 0){
         mazeBackground[y][x] = "+";
       }
       else{
         mazeBackground[y][x] = 0;
       }
+      // assign random number to find shortest path to the end point
     }
   }
+
   return mazeBackground;
+}
+
+function algorithemForRandomMaze(width,height,grid){
+  for (let y=0; y<height+2 ;y++){
+    for (let x=0; x<width+2;x++){
+        // create the base grid 
+      if (grid[y][x] !== "+" && grid[y][x] === 0){
+        grid[y][x] = Math.floor(random(1, 100));
+      }
+     } 
+  }
 }
 
 function startGameWithDiffMap(side,end,x,y,maze){
   drawMaze(side,end,maze);
   showBestRoute();
   showPlayer(x,y);
-
 }
 
 function drawMaze(side,endCoor,maze){
@@ -136,7 +152,7 @@ function drawMaze(side,endCoor,maze){
         fill(0,0,0);
         text(maze[y][x],x*side + side*2/5, y*side + side*2/3);
       }
-
+      text(maze[y][x],x*side + side*2/5, y*side + side*2/3);
       fill("lime");
       circle(endCoor[0]*side+side/2,endCoor[1]*side+side/2,side/2);
     }
@@ -172,43 +188,48 @@ function showBestRoute(){
 function keyPressed(){
 
   if (key === "1"&& gameStart){
-    solveMaze(end_point,grid2);
-    bestRoute(end_point,grid2);
+    solveMaze(end_point,currentGrid);
+    bestRoute(end_point,currentGrid);
     showRoute = true;
   }
 
   if (key === " "){
     gameStart = true;
+    randomMaze = generateMazeGrid(7,9);
+    currentGrid = randomMaze
+    algorithemForRandomMaze(7,9,currentGrid);
+    findShortestPath
     playerX = start_point[0];
     playerY = start_point[1];
     gameFinished = false;
     showRoute = false;
+
   }
 
   if (key === "w"){
-    console.log(grid2[playerY-1][playerX] !== "+");
-    if (grid2[playerY-1][playerX] !== "+"){
+    console.log(currentGrid[playerY-1][playerX] !== "+");
+    if (currentGrid[playerY-1][playerX] !== "+"){
       playerY -= 1;
     }
   }
 
   else if (key === "s"){
-    console.log(grid2[playerY+1][playerX] !== "+");
-    if (grid2[playerY+1][playerX] !== "+"){
+    console.log(currentGrid[playerY+1][playerX] !== "+");
+    if (currentGrid[playerY+1][playerX] !== "+"){
       playerY += 1;
     }
   }
 
   else if (key === "a"){
-    console.log(grid2[playerY][playerX-1] !== "+");
-    if (grid2[playerY][playerX-1] !== "+"){
+    console.log(currentGrid[playerY][playerX-1] !== "+");
+    if (currentGrid[playerY][playerX-1] !== "+"){
       playerX -= 1;
     }
   }
 
   else if (key === "d"){
-    console.log(grid2[playerY][playerX+1] !== "+");
-    if (grid2[playerY][playerX+1] !== "+"){
+    console.log(currentGrid[playerY][playerX+1] !== "+");
+    if (currentGrid[playerY][playerX+1] !== "+"){
       playerX += 1;
     }
   }
