@@ -9,18 +9,19 @@ pracicing the concept during the first half, and work on the actual
 program afterward.
 
 ## Needs To Have
-- a structre of puzzle, limiting machine's movement. basically
-    the wall that tells the player its option of movement
+- ~a structre of puzzle, limiting machine's movement. basically
+    the wall that tells the player its option of movement~
 - ~a prexisting, hardcoded puzzle for the machine to solve~
-- a way to begain and end the game
+- ~a way to begain and end the game~
 
 ## Nice To Have
 - the program is able to generate the puzzle itself
-- an interaction system that allows the human to play it
+- ~an interaction system that allows the human to play it~
 - maybe generate different difficulty of maze for both the machine 
     and the player to play it
 - a different mode, where the machine is placed in the middle 
     of a maze and tring to find the only exit of the maze.
-- fining the shorteset route
+- ~fining the shorteset route~
+- ~custome mode~
 - sound effect
 - better UI
