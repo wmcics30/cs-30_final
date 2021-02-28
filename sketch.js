@@ -20,9 +20,11 @@ let mazeWidth,mazeHeight;
 let cellLength = 20;
 let gameStart = false;
 let customMode = false;
-let getWidth = false;
-let getHeight = false;
-let cusWid,cusHei;
+let getWidthHeight = false;
+let cusWid = 0;
+let cusHei = 0;
+let customGrid = [];
+let editGrid = false;
 
 
 let grid = [
@@ -90,9 +92,11 @@ let playerX,playerY;
 
 let gameFinished = false;
 let currentGrid = grid;
-let gridNumber = 3;
+let gridNumber = 0;
 
 let groundTile, wallTile, startScreen;
+
+let input, button, greeting;
 
 function preload(){
   groundTile = loadImage("assets/ground.png");
@@ -113,23 +117,34 @@ function draw() {
     text("MAZE",width/2,height/2);
   }
   else if (customMode){
-    if (getWidth){
+    if (getWidthHeight){
+
+      textAlign(CENTER);
+      textSize(50);
+
       fill(255);
       rect(0,0,width,height);
-      fill(0);
-      text("INPUT DESIRED GRID WIDTH",width/2,height/2);
+
+      if (cusHei !== 0 && cusWid !== 0 ){
+        getWidthHeight = false;
+        editGrid = true;
+        WidthButton.hide();
+        heightButton.hide();
+        inputHeight.hide();
+        inputWidth.hide();
+        customGrid = createCusCanvas(cusWid,cusHei);
+      }
     }
-    else if (getHeight){
-      background(255);
-      text("INPUT DESIRED GRID HEIGHT",width/2,height/2);
+
+    else if (editGrid){
+     // draw grid
+     drawMaze(cellLength, [cusWid,cusHei],customGrid)
     }
     else{
-      let customGrid = [];
-      createCusCanvas(cusWid,cusHei, customGrid);
-      console.log(customGrid);
+      currentGrid = customGrid;
+      startGameWithDiffMap(cellLength,end_point,playerX,playerY,currentGrid)
     }
-    // draw grid
-    // startGamewithDiffMap
+
   }
   else{
     if (gridNumber === 1){
@@ -149,14 +164,46 @@ function draw() {
   }
 }
 
-function createCusCanvas(width,height,grid){
-  for (let y=0;y<height+2;y++){
-    grid.push([]);
-  
-    for (let x=0;x<width+2;x++){
-      grid[y].push([]);
+function mouseClicked(){
+  if (customMode && editGrid){
+    let x = Math.floor(mouseX/cellLength);
+    let y = Math.floor(mouseY/cellLength);
+
+    if (customGrid[y][x] === 0){
+      customGrid[y][x] = "+"
+    }
+    else{
+      customGrid[y][x] = 0;
     }
   }
+}
+
+
+function saveWidth(){
+  // set the value to be the x,y value of the map created
+  cusWid = Number(inputWidth.value());
+}
+
+function saveHeight(){
+  cusHei = Number(inputHeight.value());
+}
+
+function createCusCanvas(width,height){
+  let grid = []
+  for (let y=0;y<height+2;y++){
+    grid.push([]);
+    for (let x=0;x<width+2;x++){
+      console.log(x,y)
+      grid[y].push(0);
+      if (x === 0 || y === 0 || x == width +1 || y == height +1){
+        grid[y][x] = "+";
+      } 
+      else{
+        grid[y][x] = 0
+      }
+   }
+  }
+  return grid;
 }
 
 function startGameWithDiffMap(side,end,x,y,maze){
@@ -179,12 +226,12 @@ function drawMaze(side,endCoor,maze){
       //square(x*side,y*side,side);
 
       // code below shows things calculated number
-      if (maze[y][x] !== -1 && maze[y][x] !== 0 && showRoute === true){
-        // here you draw a green circle within the maze, denoting it is calculated
-        fill(0,0,0);
-        text(maze[y][x],x*side + side*2/5, y*side + side*2/3);
-      }
-      text(maze[y][x],x*side + side*2/5, y*side + side*2/3);
+      // if (maze[y][x] !== -1 && maze[y][x] !== 0 && showRoute === true){
+      //   // here you draw a green circle within the maze, denoting it is calculated
+      //   fill(0,0,0);
+      //   text(maze[y][x],x*side + side*2/5, y*side + side*2/3);
+      // }
+      // text(maze[y][x],x*side + side*2/5, y*side + side*2/3);
       fill("lime");
       circle(endCoor[0]*side+side/2,endCoor[1]*side+side/2,side/2);
     }
@@ -199,15 +246,21 @@ function showPlayer(x,y){
     rect(x*cellLength,y*cellLength,cellLength);
   }
   if (playerX === end_point[0] && playerY === end_point[1]){
-    if (gridNumber < 4){
-      gridNumber ++;
-      playerX = 1;
-      playerY = 1;
-      bestRouteCoor = [];
+    if (!customMode){
+      if (gridNumber < 4){
+        gridNumber ++;
+        playerX = 1;
+        playerY = 1;
+        bestRouteCoor = [];
+      }
+      if (gridNumber === 4){
+        gameStart = false;
+        gameFinished = true;
+      }
     }
-    if (gridNumber === 4){
+    else{
       gameStart = false;
-      gameFinished = true;
+      customMode = false;
     }
   }
 }
@@ -227,7 +280,7 @@ function showBestRoute(){
 
 function keyPressed(){
 
-  if (key === "1"&& gameStart){
+  if (key === "`"&& gameStart){
     solveMaze(end_point,currentGrid);
     bestRoute(end_point,currentGrid);
     showRoute = true;
@@ -243,23 +296,36 @@ function keyPressed(){
     showRoute = false;
   }
 
-  if (getHeight){
-    cusHei = Number(key);
-    getHeight = false;
-  }
-
-  if (getWidth){
-    cusWid = Number(key);
-    getWidth = false;
-    getHeight = true;
-  }
-
   // custom mode
   if (key === "c"){
     customMode = true;
-    getWidth = true;
+    getWidthHeight = true;
     gameStart = true;
-    // get an input of Y
+
+    // ask user for desired height/width
+    if (getWidthHeight){
+      inputWidth = createInput();
+      inputWidth.position(width/2,height/2);
+      inputWidth.size(50)
+
+      inputHeight = createInput();
+      inputHeight.position(width/2,height/2 + 50);
+      inputHeight.size(50)
+
+      // display button and change value when clicked
+      WidthButton  = createButton("Enter");
+      WidthButton.position(width/2 + 50, height/2);
+      WidthButton.mousePressed(saveWidth);
+      
+      heightButton  = createButton("Enter");
+      heightButton.position(width/2 + 50, height/2 + 50);
+      heightButton.mousePressed(saveHeight);
+    }
+  }
+
+  if (key === "Enter" && editGrid){
+    editGrid = false;
+    end_point = [cusWid,cusHei];
   }
 
   // moves the character 
