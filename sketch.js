@@ -133,15 +133,16 @@ function draw() {
         inputHeight.hide();
         inputWidth.hide();
         customGrid = createCusCanvas(cusWid,cusHei);
+        currentGrid = customGrid;
       }
     }
 
     else if (editGrid){
      // draw grid
-     drawMaze(cellLength, [cusWid,cusHei],customGrid)
+     drawMaze(cellLength, [cusWid,cusHei],currentGrid)
     }
     else{
-      currentGrid = customGrid;
+
       startGameWithDiffMap(cellLength,end_point,playerX,playerY,currentGrid)
     }
 
@@ -165,15 +166,18 @@ function draw() {
 }
 
 function mouseClicked(){
+  let x = Math.floor(mouseX/cellLength);
+  let y = Math.floor(mouseY/cellLength);
+  console.log(x,y)
   if (customMode && editGrid){
-    let x = Math.floor(mouseX/cellLength);
-    let y = Math.floor(mouseY/cellLength);
+    if (x !== 0 && x !== currentGrid[0].length -1 && y !== 0 && y !== currentGrid.length-1){
 
-    if (customGrid[y][x] === 0){
-      customGrid[y][x] = "+"
-    }
-    else{
-      customGrid[y][x] = 0;
+      if (customGrid[y][x] === 0){
+        customGrid[y][x] = "+"
+      }
+      else{
+        customGrid[y][x] = 0;
+      }
     }
   }
 }
