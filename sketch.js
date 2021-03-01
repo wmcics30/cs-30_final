@@ -167,6 +167,8 @@ function draw() {
 
     else if (editGrid){
      // displayer grid for the user to edit
+     fill("gold")
+     text("PRESS ENTER TO CONTINUE",width/2,height - 20)
      drawMaze(cellLength, [cusWid,cusHei],currentGrid)
     }
     else{
@@ -442,6 +444,7 @@ function mouseClicked(){
 
 function startGameWithDiffMap(side,end,x,y,maze){
   // start the game with given valuable
+  text("Move with WASD key",width/2,height-20)
   drawMaze(side,end,maze);
   showBestRoute();
   showPlayer(x,y);
