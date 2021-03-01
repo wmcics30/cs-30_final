@@ -7,7 +7,6 @@
 // https://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking
 // website above is helpful for a maze solver
 
-// could add more levels,
 // could add sound effects
 // create a class for grids, each class is a grid itself
 // each class has a starting point, end point, bestRouteCoor, playerX, playerY
@@ -25,7 +24,6 @@ let cusWid = 0;
 let cusHei = 0;
 let customGrid = [];
 let editGrid = false;
-
 
 let grid = [
   ["+", "+", "+", "+", "+", "+", "+", "+", "+", "+"],
@@ -84,7 +82,6 @@ let grid3 = [
 let bestRouteCoor = [];
 let showRoute = false;
 
-// make a class that relates endpoint to the maze
 let start_point = [1,1];
 let end_point;
 
@@ -98,23 +95,37 @@ let groundTile, wallTile, startScreen;
 
 let input, button, greeting;
 
+let xAlign,yAlign
+
+let menuSound,clickSound;
+
 function preload(){
   groundTile = loadImage("assets/ground.png");
   wallTile = loadImage("assets/wall.png");
-  startScreen = loadImage("assets/startScreen.jpg");
+
+  menuSound = loadSound("assets/menu.wav");
+  clickSound = loadSound("assets/click.wav");
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  textAlign(CENTER)
   cellLength = 30;
   playerX = start_point[0];
   playerY = start_point[1];
 }
 
 function draw() {
-  background(startScreen);
+  background("black");
   if (!gameStart){
-    text("MAZE",width/2,height/2);
+    menuSound.play()
+    fill("gold")
+    textSize(75)
+    text("MAZE",width/2,height/3);
+    textSize(15)
+    text("Press space to play advanture mode",width/2,height/1.75)
+    text("Press C to start custom mode",width/2,height/1.5)
+    text('Press "`" if you want to cheat',width/2,height/1.125)
   }
   else if (customMode){
     if (getWidthHeight){
@@ -134,11 +145,13 @@ function draw() {
         inputWidth.hide();
         customGrid = createCusCanvas(cusWid,cusHei);
         currentGrid = customGrid;
+        xAlign = width/2 - (cusWid * (cellLength+4))/2
+        yAlign = height/2 - (cusHei * (cellLength+10))/2
       }
     }
 
     else if (editGrid){
-     // draw grid
+     // displayer grid for the user to edit
      drawMaze(cellLength, [cusWid,cusHei],currentGrid)
     }
     else{
@@ -160,15 +173,16 @@ function draw() {
       currentGrid = grid3;
       end_point = [21,18];
     }
- 
+
+    xAlign = width/2 - (currentGrid[0].length * (cellLength+2))/2
+    yAlign = height/2 - (currentGrid.length * (cellLength+2))/2
     startGameWithDiffMap(cellLength,end_point,playerX,playerY,currentGrid);
   }
 }
 
 function mouseClicked(){
-  let x = Math.floor(mouseX/cellLength);
-  let y = Math.floor(mouseY/cellLength);
-  console.log(x,y)
+  let x = Math.floor((mouseX - xAlign)/cellLength);
+  let y = Math.floor((mouseY - yAlign)/cellLength);
   if (customMode && editGrid){
     if (x !== 0 && x !== currentGrid[0].length -1 && y !== 0 && y !== currentGrid.length-1){
 
@@ -181,7 +195,6 @@ function mouseClicked(){
     }
   }
 }
-
 
 function saveWidth(){
   // set the value to be the x,y value of the map created
@@ -220,24 +233,16 @@ function drawMaze(side,endCoor,maze){
   for (let y=0;y<maze.length;y++){
     for (let x=0; x<maze[0].length;x++){
       if (maze[y][x] === "+"){
-        //fill("brown");
-        image(wallTile,x*cellLength,y*cellLength,cellLength,cellLength);
+
+        image(wallTile,x*cellLength + xAlign,y*cellLength+ yAlign,cellLength,cellLength);
       }
       else{
-        //fill("white");
-        image(groundTile,x*cellLength,y*cellLength,cellLength,cellLength);
-      }
-      //square(x*side,y*side,side);
 
-      // code below shows things calculated number
-      // if (maze[y][x] !== -1 && maze[y][x] !== 0 && showRoute === true){
-      //   // here you draw a green circle within the maze, denoting it is calculated
-      //   fill(0,0,0);
-      //   text(maze[y][x],x*side + side*2/5, y*side + side*2/3);
-      // }
-      // text(maze[y][x],x*side + side*2/5, y*side + side*2/3);
+        image(groundTile,x*cellLength + xAlign,y*cellLength + yAlign,cellLength,cellLength);
+      }
+
       fill("lime");
-      circle(endCoor[0]*side+side/2,endCoor[1]*side+side/2,side/2);
+      circle(endCoor[0]*side+side/2+xAlign,endCoor[1]*side+side/2 + yAlign,side/2);
     }
   }
 }
@@ -247,7 +252,7 @@ function showPlayer(x,y){
 
   //triangle((x+0.25)*cellLength,(y+0.25)*cellLength,(x+0.75)*cellLength,(y+0.25)*cellLength,(x+0.5)*cellLength,(y+.75)*cellLength);
   if (gameStart){
-    rect(x*cellLength,y*cellLength,cellLength);
+    rect(x*cellLength + xAlign,y*cellLength+yAlign,cellLength);
   }
   if (playerX === end_point[0] && playerY === end_point[1]){
     if (!customMode){
@@ -265,6 +270,8 @@ function showPlayer(x,y){
     else{
       gameStart = false;
       customMode = false;
+      cusWid = 0;
+      cusHei = 0;
     }
   }
 }
@@ -272,11 +279,11 @@ function showPlayer(x,y){
 function showBestRoute(){
   
   if (showRoute){
-    // highlight from first element in the bestroute list
+    // highlight all coors in the bestroute list
 
     for (let i =0;i<bestRouteCoor.length;i++){
       fill("lime");
-      square(bestRouteCoor[i][1]*cellLength,bestRouteCoor[i][0]*cellLength,cellLength);
+      square(bestRouteCoor[i][1]*cellLength + xAlign,bestRouteCoor[i][0]*cellLength+yAlign,cellLength);
     }
     
   }
@@ -292,6 +299,7 @@ function keyPressed(){
 
   if (key === " "){
     // start the game
+    bestRouteCoor = []
     gridNumber = 1;
     gameStart = true;
     playerX = start_point[0];
@@ -302,6 +310,7 @@ function keyPressed(){
 
   // custom mode
   if (key === "c"){
+    bestRouteCoor = []
     customMode = true;
     getWidthHeight = true;
     gameStart = true;
@@ -359,14 +368,17 @@ function keyPressed(){
 }
 
 function solveMaze(finish,maze){
-  // yi and xi are initial y and x value, ye and xe are ending x,y value
 
+  //ye and xe are coordinat of the finishing grid, k is the value to be
+  //assigned to the non-wall grid.
   let ye = finish[1];
   let xe = finish[0] ;
   let k = 1;
 
-  maze[1][1] = 1;
+  // set 1,1 (start position) as 1 and assign the next number until it 
+  // reach the finishing poisiton. 
 
+  maze[1][1] = 1;
   while (maze[ye][xe] === 0){
     spread(k,maze);
     k += 1;
@@ -375,7 +387,10 @@ function solveMaze(finish,maze){
 
 function spread(num,maze){
 
-  // checking for the number, if white around it, assign it to be next number  
+  // checking the surronding of the grid with given number, if 
+  // not a wall and no number is assigned to it, assign the next
+  // int to the grid
+
   for (let y = 0; y < maze.length;y++){
     for (let x =0; x < maze[0].length;x++){
       if (maze[y][x] === num){
@@ -425,18 +440,20 @@ function bestRoute(end,maze){
 
 function countBack(num,x,y,maze){
 
+  // count back from the end (finish grid) to beginning (starting coor)
+
   if (maze[y][x-1] === num-1){
     bestRouteCoor.push([y,x-1]);
   }
-  else   if (maze[y][x+1] === num-1){
+  else if (maze[y][x+1] === num-1){
     bestRouteCoor.push([y,x+1]);
   }
 
-  else   if (maze[y-1][x] === num-1){
+  else if (maze[y-1][x] === num-1){
     bestRouteCoor.push([y-1,x]);
   }
 
-  else   if (maze[y+1][x] === num-1){
+  else if (maze[y+1][x] === num-1){
     bestRouteCoor.push([y+1,x]);
   }
   
