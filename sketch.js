@@ -118,7 +118,7 @@ function setup() {
 function draw() {
   background("black");
   if (!gameStart){
-    menuSound.play()
+    // menuSound.play()
     fill("gold")
     textSize(75)
     text("MAZE",width/2,height/3);
