@@ -23,5 +23,5 @@ program afterward.
     of a maze and tring to find the only exit of the maze.
 - ~fining the shorteset route~
 - ~custome mode~
-- sound effect
-- better UI
+- ~sound effect~
+- ~better UI~
